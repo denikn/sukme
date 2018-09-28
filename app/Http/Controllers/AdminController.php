@@ -7,6 +7,7 @@ use Validator;
 use Intervention\Image\ImageManagerStatic as Image;
 use App\Helpers\CustomHelper;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Auth;
 
 use App\User;
 use App\Sip_ref_permission;
@@ -98,7 +99,7 @@ class AdminController extends Controller
         return view('admin.config-puskesmas',compact('config'));
     }
 
-    public function update_config_proses(Request $request)
+    public function update_meta_proses(Request $request)
     {
 
         // chec user config
@@ -135,6 +136,60 @@ class AdminController extends Controller
         $validator = Validator::make($input, [
             
             'sip_trx_site_configs_title' => 'required|string|max:255'
+
+        ]);
+        
+        if ($validator->fails()) {
+
+            return back()
+                        ->withErrors($validator)
+                        ->with('type','updateConfig')
+                        ->with('message','Please check the input form')
+                        ->with('status',0)
+                        ->withInput();
+        }
+
+        $config->update($input);
+
+        return back()
+                    ->with('status',1)
+                    ->with('message','Success');
+    }
+
+    public function update_setting_proses(Request $request)
+    {
+
+        // chec user config
+        $config = Sip_trx_site_config::first();
+
+        if(!is_object($config)){
+
+            $input = array(
+                
+                'sip_trx_site_configs_title' => 'SIP',
+                'sip_trx_site_configs_icon' => '#',
+                'sip_trx_site_configs_logo' => '#',
+                'sip_trx_site_configs_description' => 'No Description',
+                'sip_trx_site_configs_address' => 'No Address',
+                'sip_trx_site_configs_key_sisdinkes'  => 'No Key',
+
+                );
+
+            $config = Sip_trx_site_config::create($input);
+
+        }
+
+        $input = array(
+            
+            'sip_trx_site_configs_trf_type' => $request->input('sip_trx_site_configs_trf_type'),
+            'sip_trx_site_configs_trf_data_type' => $request->input('sip_trx_site_configs_trf_data_type')
+
+            );
+
+        $validator = Validator::make($input, [
+            
+            'sip_trx_site_configs_trf_type' => 'required',
+            'sip_trx_site_configs_trf_data_type' => 'required'
 
         ]);
         
@@ -275,6 +330,73 @@ class AdminController extends Controller
         return back()
                     ->with('status',1)
                     ->with('message','Success');
+    }
+
+    public function index_generate_activity(Request $request)
+    {   
+        
+        $activities = Sip_ref_activity::where('sip_ref_activities_status','active')->get();
+        $user = Auth::user();
+        $from = $request->input('from');
+        $to = $request->input('to');
+
+        $last = strtotime($from); 
+        $next = strtotime($to);
+
+        if(trim($from) !== '' && trim($to) !== ''){
+
+            foreach($activities as $activity){
+                
+                $tmpForms = [];                
+                foreach($activity->forms()->where('sip_ref_forms_status','active')->get() as $form){
+                    
+                    $subs = $form->subs;
+                    foreach($subs as $sub){
+                        
+                        // get columns
+                        $tmpColumns = $sub->columns;
+
+                        // get row
+                        $tmpRows = $sub->rows()->where('sip_ref_rows_type_row','row')->get();
+
+                        foreach($tmpColumns as $col){
+
+                            foreach($tmpRows as $row){
+
+                                $row['value'] = $form->values()->join('sip_trx_form_submissions','sip_trx_form_submissions.sip_trx_form_submission_id','=','sip_trx_form_values.sip_trx_form_values_submission_id')
+                                                ->join('sip_trx_row_values','sip_trx_row_values.sip_trx_row_values_code','=','sip_trx_form_values.sip_trx_form_values_code')
+                                                ->where('sip_trx_row_values.sip_trx_row_values_column_id',$col->sip_ref_columns_id)
+                                                ->where('sip_trx_row_values.sip_trx_row_values_column_id',$col->sip_ref_columns_id)
+                                                ->where('sip_trx_row_values.sip_trx_row_values_row_id',$row->sip_ref_rows_id)
+                                                ->where('sip_trx_form_values.created_at','>=',date('Y-m-d', $last))
+                                                ->where('sip_trx_form_values.created_at','<=',date('Y-m-d', $next))
+                                                ->sum('sip_trx_form_values_value_string');                        
+
+                            }
+
+                        }
+
+                        unset($sub['rows']);
+                        $sub['rows'] = $tmpRows; 
+
+                    }
+
+                    $tmpForms[] = $form;
+                } 
+            
+                unset($activity['forms']);
+                $activity['forms'] = $tmpForms; 
+            
+            }
+        }
+
+        $logs = Sip_trx_user_log::where('sip_trx_user_logs_user_id',$user->user_id)
+                                ->where('sip_trx_user_logs_type','generate-submission-offline')
+                                ->orderBy('sip_trx_user_logs_id','DESC')
+                                ->paginate(10);
+
+        return view('admin.report.index_send_report',compact('activities','user','logs'));
+    
     }
 
     public function index_user(Request $request){

@@ -13,6 +13,55 @@
           </nav>
 
           <div class="section-body">
+        
+            <div class="row">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">Filter Data</h5>
+                    <form class="form-inline">
+
+                      <div class="form-group mx-sm-3 mb-2">
+                        <label for="exampleInputEmail1">Data From &nbsp;</label>
+                      <input class="form-control" value="{{ request('from') }}" type="date" name="from">
+                      </div>
+                      <div class="form-group mx-sm-3 mb-2">
+                        <label for="exampleInputEmail1">Data To &nbsp;</label>
+                      <input class="form-control" value="{{ request('to') }}" type="date" name="to">
+                      </div>
+                      <button type="submit" class="btn btn-primary">Generate</button>
+
+                    </form>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-body">
+
+                    <div class="row">
+                      <div class="col-12">
+                        <div class="dropdown float-right">
+                          <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Download
+                          </button>
+                          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="{{ route('download_excel_activity_member',['id' => $activity->sip_ref_activities_id,'from' => request('from'), 'to' => request('to')]) }}">Excel</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
 
             @foreach($subs as $sub)
               @if($sub->sip_ref_sub_forms_report_show)

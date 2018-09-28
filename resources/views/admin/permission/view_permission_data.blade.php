@@ -130,6 +130,12 @@
 				    <label for="exampleInputEmail1">Title</label>
 				    <input type="text" class="form-control" value="{{ old('sip_ref_permissions_name') }}" name="sip_ref_permissions_name" aria-describedby="emailHelp" placeholder="Enter Title">
 				  </div>
+          <div class="form-check">
+            <input class="form-check-input" name="is_apply_to_all" type="checkbox" value="is_all" id="defaultCheck1">
+            <label class="form-check-label" for="defaultCheck1">
+              Apply to all user
+            </label>
+          </div>
 		      </div>
 		      <div class="modal-footer">
 		      	<button type="button" class="btn btn-secondary btn-sm float-left" data-dismiss="modal">Close</button>

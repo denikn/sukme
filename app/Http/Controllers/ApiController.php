@@ -198,12 +198,9 @@ class ApiController extends Controller
         
         Sip_trx_user_log::create($inputLog);
 
-        $config = $user->config;
-
-        if(is_object($config)
-                && is_object($site_config) 
-                && $config->sip_trx_user_configs_trf_type == 'online' 
-                && $config->sip_trx_user_configs_trf_data_type == 'single'){
+        if(is_object($site_config) 
+                && $site_config->sip_trx_site_configs_trf_type == 'online' 
+                && $site_config->sip_trx_site_configs_trf_data_type == 'single'){
 
             //store api
             $client = new \GuzzleHttp\Client();

@@ -56,7 +56,7 @@ License: You must have a valid license purchased only from themeforest(the above
 							<div class="m-stack m-stack--ver m-stack--general">
 								<div class="m-stack__item m-stack__item--middle m-stack__item--center m-brand__logo">
 									<a href="index.html" class="m-brand__logo-wrapper">
-										<img alt="" src="{{ asset('metronic/demo/demo3/media/img/logo/logo.png') }}"/>
+										<img alt="{{ $site_config->sip_trx_site_configs_puskemas_name }}" src="{{ $site_config->sip_trx_site_configs_logo }}" style="    max-width: 70px;"/>
 									</a>
 								</div>
 								<div class="m-stack__item m-stack__item--middle m-brand__tools">
@@ -80,132 +80,16 @@ License: You must have a valid license purchased only from themeforest(the above
 						</div>
 						<!-- END: Brand -->
 						<div class="m-stack__item m-stack__item--fluid m-header-head" id="m_header_nav">
-							<!-- BEGIN: Horizontal Menu -->
-							<button class="m-aside-header-menu-mobile-close  m-aside-header-menu-mobile-close--skin-dark " id="m_aside_header_menu_mobile_close_btn">
-								<i class="la la-close"></i>
-							</button>
-							<div id="m_header_menu" class="m-header-menu m-aside-header-menu-mobile m-aside-header-menu-mobile--offcanvas  m-header-menu--skin-light m-header-menu--submenu-skin-light m-aside-header-menu-mobile--skin-dark m-aside-header-menu-mobile--submenu-skin-dark "  >
-								<ul class="m-menu__nav  m-menu__nav--submenu-arrow ">
-									<li class="m-menu__item  m-menu__item--submenu m-menu__item--rel"  data-menu-submenu-toggle="click" aria-haspopup="true">
-										<a  href="#" class="m-menu__link m-menu__toggle">
-											<span class="m-menu__link-text">
-												Actions
-											</span>
-											<i class="m-menu__hor-arrow la la-angle-down"></i>
-											<i class="m-menu__ver-arrow la la-angle-right"></i>
-										</a>
-										<div class="m-menu__submenu m-menu__submenu--classic m-menu__submenu--left">
-											<span class="m-menu__arrow m-menu__arrow--adjust"></span>
-											<ul class="m-menu__subnav">
-												<li class="m-menu__item "  aria-haspopup="true">
-													<a  href="inner.html" class="m-menu__link ">
-														<i class="m-menu__link-icon flaticon-file"></i>
-														<span class="m-menu__link-text">
-															Create New Post
-														</span>
-													</a>
-												</li>
-											</ul>
-										</div>
-									</li>
-									
-								</ul>
-							</div>
-							<!-- END: Horizontal Menu -->
+
 							<!-- BEGIN: Topbar -->
 							<div id="m_header_topbar" class="m-topbar  m-stack m-stack--ver m-stack--general">
 								<div class="m-stack__item m-topbar__nav-wrapper">
 									<ul class="m-topbar__nav m-nav m-nav--inline">
-										<li class="
-	m-nav__item m-dropdown m-dropdown--large m-dropdown--arrow m-dropdown--align-center m-dropdown--mobile-full-width m-dropdown--skin-light	m-list-search m-list-search--skin-light" 
-	data-dropdown-toggle="click" data-dropdown-persistent="true" id="m_quicksearch" data-search-type="dropdown">
-											<a href="#" class="m-nav__link m-dropdown__toggle">
-												<span class="m-nav__link-icon">
-													<i class="flaticon-search-1"></i>
-												</span>
-											</a>
-											<div class="m-dropdown__wrapper">
-												<span class="m-dropdown__arrow m-dropdown__arrow--center"></span>
-												<div class="m-dropdown__inner ">
-													<div class="m-dropdown__header">
-														<form  class="m-list-search__form">
-															<div class="m-list-search__form-wrapper">
-																<span class="m-list-search__form-input-wrapper">
-																	<input id="m_quicksearch_input" autocomplete="off" type="text" name="q" class="m-list-search__form-input" value="" placeholder="Search...">
-																</span>
-																<span class="m-list-search__form-icon-close" id="m_quicksearch_close">
-																	<i class="la la-remove"></i>
-																</span>
-															</div>
-														</form>
-													</div>
-													<div class="m-dropdown__body">
-														<div class="m-dropdown__scrollable m-scrollable" data-scrollable="true" data-max-height="300" data-mobile-max-height="200">
-															<div class="m-dropdown__content"></div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</li>
-										<li class="m-nav__item m-topbar__notifications m-topbar__notifications--img m-dropdown m-dropdown--large m-dropdown--header-bg-fill m-dropdown--arrow m-dropdown--align-center 	m-dropdown--mobile-full-width" data-dropdown-toggle="click" data-dropdown-persistent="true">
-											<a href="#" class="m-nav__link m-dropdown__toggle" id="m_topbar_notification_icon">
-												<span class="m-nav__link-badge m-badge m-badge--accent">
-													3
-												</span>
-												<span class="m-nav__link-icon">
-													<i class="flaticon-alert-2"></i>
-												</span>
-											</a>
-											<div class="m-dropdown__wrapper">
-												<span class="m-dropdown__arrow m-dropdown__arrow--center"></span>
-												<div class="m-dropdown__inner">
-													<div class="m-dropdown__header m--align-center" style="background: url({{ asset('metronic/app/media/img/misc/notification_bg.jpg') }}); background-size: cover;">
-														<span class="m-dropdown__header-title">
-															9 New
-														</span>
-														<span class="m-dropdown__header-subtitle">
-															User Notifications
-														</span>
-													</div>
-													<div class="m-dropdown__body">
-														<div class="m-dropdown__content">
-															<ul class="nav nav-tabs m-tabs m-tabs-line m-tabs-line--brand" role="tablist">
-																<li class="nav-item m-tabs__item">
-																	<a class="nav-link m-tabs__link active" data-toggle="tab" href="#topbar_notifications_notifications" role="tab">
-																		Alerts
-																	</a>
-																</li>
-															</ul>
-															<div class="tab-content">
-																<div class="tab-pane active" id="topbar_notifications_notifications" role="tabpanel">
-																	<div class="m-scrollable" data-scrollable="true" data-max-height="250" data-mobile-max-height="200">
-																		<div class="m-list-timeline m-list-timeline--skin-light">
-																			<div class="m-list-timeline__items">
-																				<div class="m-list-timeline__item">
-																					<span class="m-list-timeline__badge -m-list-timeline__badge--state-success"></span>
-																					<span class="m-list-timeline__text">
-																						12 new users registered
-																					</span>
-																					<span class="m-list-timeline__time">
-																						Just now
-																					</span>
-																				</div>
-																			</div>
-																		</div>
-																	</div>
-																</div>
-																
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</li>
-										
+																				
 										<li class="m-nav__item m-topbar__user-profile m-topbar__user-profile--img m-dropdown m-dropdown--medium m-dropdown--arrow m-dropdown--header-bg-fill m-dropdown--align-right m-dropdown--mobile-full-width m-dropdown--skin-light" data-dropdown-toggle="click">
 											<a href="#" class="m-nav__link m-dropdown__toggle">
 												<span class="m-topbar__userpic">
-													<img src="{{ asset('metronic/app/media/img/users/user3.jpg') }}" alt=""/>
+													<img src="{{ Auth::user()->user_img_profile }}" style="max-height:50px;" alt="{{ Auth::user()->user_name }}"/>
 												</span>
 											</a>
 											<div class="m-dropdown__wrapper">
@@ -214,7 +98,7 @@ License: You must have a valid license purchased only from themeforest(the above
 													<div class="m-dropdown__header m--align-center" style="background: url({{ asset('metronic/app/media/img/misc/user_profile_bg.jpg') }}); background-size: cover;">
 														<div class="m-card-user m-card-user--skin-dark">
 															<div class="m-card-user__pic">
-																<img src="{{ asset('metronic/app/media/img/users/user3.jpg') }}" alt=""/>
+																<img src="{{ Auth::user()->user_img_profile }}" alt="{{ Auth::user()->user_name }}"/>
 															</div>
 															<div class="m-card-user__details">
 																<span class="m-card-user__name m--font-weight-500">
@@ -364,18 +248,6 @@ License: You must have a valid license purchased only from themeforest(the above
 									</ul>
 								</div>
 							</li>
-							@if($user_config->where('sip_trx_user_configs_user_id',Auth::user()->user_id)->first()->sip_trx_user_configs_trf_type == 'offline')
-							<li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true" data-menu-submenu-toggle="hover" data-redirect="true">
-								<a  href="{{ route('generate_activity_member') }}" class="m-menu__link m-menu__toggle">
-									<span class="m-menu__item-here"></span>
-									<i class="m-menu__link-icon flaticon-share"></i>
-									<span class="m-menu__link-text">
-										Offline Transfer
-									</span>
-									<i class="m-menu__ver-arrow la la-angle-right"></i>
-								</a>
-							</li>
-							@endif
 						</ul>
 					</div>
 					<!-- END: Aside Menu -->

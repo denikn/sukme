@@ -28,7 +28,7 @@
 
 				<div class="card">
                   <div class="card-header">
-                    <h4>Bordered Tab</h4>
+                    <h4>Profile</h4>
                   </div>
                   <div class="card-body">
                     <div class="row">
@@ -49,12 +49,18 @@
                         <div class="tab-content" id="myTab2Content">
                           <div class="tab-pane fade active show" id="home4" role="tabpanel" aria-labelledby="home-tab4">
 								
-							<form method="post" action="{{ route('update_member_admin', [ "id" => Auth::user()->user_id ]) }}">
+							<form method="post" action="{{ route('update_member_admin', [ "id" => Auth::user()->user_id ]) }}" enctype="multipart/form-data">
 								{{ csrf_field() }}
 							  <div class="form-group">
 							    <label for="text">Name</label>
 							    <input id="text" name="user_name" value="{{ Auth::user()->user_name }}" type="text" class="form-control here">
 							  </div>
+							<div class="form-group">
+								<label for="example-text-input" class="col-form-label">
+									Profile Photo
+								</label>
+								<input class="form-control here" type="file" name="user_img_profile" id="file">
+							</div>
 							  <div class="form-group">
 							    <label for="text">Phone</label>
 							    <input id="text" name="user_phone" value="{{ Auth::user()->user_phone }}" type="text" class="form-control here">

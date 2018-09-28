@@ -52,7 +52,7 @@
 											Security
 										</a>
 									</li>
-									<li class="nav-item m-tabs__item">
+									<li class="nav-item m-tabs__item" style="display:none;">
 										<a class="nav-link m-tabs__link" data-toggle="tab" href="#tab_setting" role="tab">
 											Settings
 										</a>
@@ -203,7 +203,7 @@
 									</div>
 								</form>
 							</div>
-							<div class="tab-pane" id="tab_setting">
+							<div class="tab-pane" id="tab_setting" style="display:none;">
 								<form method="post" class="m-form m-form--fit m-form--label-align-right" action="{{ route('update_setting_member', [ "id" => Crypt::encryptString(Auth::user()->user_id) ]) }}">
 									<div class="m-portlet__body">
 										{{ csrf_field() }}

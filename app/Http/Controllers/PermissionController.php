@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Validator;
+use Illuminate\Support\Facades\Log;
 
 use App\Sip_ref_permission;
+use App\Sip_trx_user_permission;
+use App\User;
 
 class PermissionController extends Controller
 {
@@ -21,7 +24,8 @@ class PermissionController extends Controller
 
         $validator = Validator::make($input, [
             
-            'sip_ref_permissions_name' => 'required|string|max:255'
+            'sip_ref_permissions_name' => 'required|string|max:255',
+            'sip_ref_permissions_code' => 'unique:sip_ref_permissions,sip_ref_permissions_code'
 
         ]);
         
@@ -33,9 +37,37 @@ class PermissionController extends Controller
                         ->with('message','Please check the input form')
                         ->with('status',0)
                         ->withInput();
+                        
         }
 
-        Sip_ref_permission::insert($input);
+        $permission = Sip_ref_permission::insertGetId($input);
+
+        if(trim($request->input('is_apply_to_all')) !== ''){
+
+            $users = User::all();
+
+            foreach($users as $user){
+                
+                $input = [
+                    
+                    'sip_trx_user_permissions_permission_id' => $permission,
+                    'sip_trx_user_permissions_user_id' => $user->user_id
+
+                ];
+                
+                // check user permission exist
+                $check = Sip_trx_user_permission::where('sip_trx_user_permissions_permission_id',$permission)
+                        ->where('sip_trx_user_permissions_user_id',$user->user_id)->first();
+
+                if (!is_object($check)) {
+                    
+                    Sip_trx_user_permission::create($input);
+
+                }   
+                             
+            }            
+
+        }
 
         return back()
         			->with('status',1)

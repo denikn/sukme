@@ -123,6 +123,9 @@ class UserController extends Controller
                         ->with('type','updateUser')
                         ->with('message','Data not found')
                         ->with('status',0);
+        
+        $file = $request->file('user_img_profile');
+        $destinationPath = public_path().'/assets/'.$user->user_id.'/profile/';     
 
         $input = [
             
@@ -152,6 +155,74 @@ class UserController extends Controller
         }
 
         $user->update($input);
+
+        if($request->hasFile('user_img_profile')){
+
+            if(!File::exists(public_path().'/assets/'.$user->user_id)){
+
+                File::makeDirectory(public_path().'/assets/'.$user->user_id);   
+
+            }
+            
+            if(!File::exists($destinationPath)){
+
+                File::makeDirectory($destinationPath);    
+
+            }
+
+            $input = array(
+
+                'user_img_profile' => $request->file('user_img_profile')
+
+                );
+
+            $rules = array(
+
+                'user_img_profile' => 'required|mimes:jpeg,png,jpg|max:50480'
+
+                );
+
+            $validator = Validator::make($input,$rules); 
+
+            if ($validator->fails()) {
+
+                return back()
+                            ->withErrors($validator)
+                            ->with('type','updateUser')
+                            ->with('id',$id)
+                            ->with('message','Please check the input form')
+                            ->with('status',0)
+                            ->withInput();
+            }
+
+            $filename = CustomHelper::pretty_url(str_random(6).'_'.$file->getClientOriginalName()).'.'.$file->getClientOriginalExtension();;
+
+            $file->move($destinationPath,$filename);
+
+            $img = Image::make($destinationPath.''.$filename);
+
+            //set medium
+            $img->resize(400, null, function ($constraint) {
+                $constraint->aspectRatio();
+            })->save($destinationPath.''.$filename);
+
+            $input = array(
+
+                'user_img_profile' => $filename
+
+                );
+
+            //delete old picture that different from the default picture
+            if(File::exists($destinationPath.''.$user->user_img_profile)){
+
+                File::delete($destinationPath.''.$user->user_img_profile);
+
+            }
+
+            //update photo
+            $user->update($input);
+
+        }
 
         return back()
         			->with('status',1)
@@ -245,10 +316,7 @@ class UserController extends Controller
 
     public function update_member_user_proses($id, Request $request){
         
-        $user = User::find(Crypt::decryptString($id));
-
-        $file = $request->file('user_img_profile');
-        $destinationPath = public_path().'/assets/'.$user->user_id.'/profile/';        
+        $user = User::find(Crypt::decryptString($id));  
 
         if(!is_object($user))             
             return back()
@@ -256,6 +324,9 @@ class UserController extends Controller
                         ->with('message','Data not found')
                         ->with('status',0);
 
+        $file = $request->file('user_img_profile');
+        $destinationPath = public_path().'/assets/'.$user->user_id.'/profile/';      
+        
         $input = [
             
             'user_name' => $request->input('user_name'),

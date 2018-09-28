@@ -55,12 +55,12 @@
           </div>
           <div class="sidebar-user">
             <div class="sidebar-user-picture">
-              <img alt="image" src="{{ asset('sip/img/avatar/avatar-1.jpeg') }}">
+              <img alt="image" src="{{ Auth::user()->user_img_profile }}">
             </div>
             <div class="sidebar-user-details">
               <div class="user-name">{{ Auth::user()->user_name }}</div>
               <div class="user-role">
-                Administrator
+                {{ Auth::user()->user_type }}
               </div>
             </div>
           </div>
@@ -107,6 +107,11 @@
                 @endforeach
               </ul>
             </li>
+            @if($site_config->sip_trx_site_configs_trf_type == 'offline')
+            <li>
+              <a href="{{ route('generate_activity_member') }}"><i class="ion ion-ios-albums-outline"></i><span>Offline Transfer</span></a>
+            </li>
+            @endif
             <li>
               <a href="#" class="has-dropdown"><i class="ion ion-flag"></i><span>Icons</span></a>
               <ul class="menu-dropdown">

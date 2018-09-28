@@ -137,7 +137,8 @@
 	                input+='<tr>';
 
 	                var colspace = grrows.children.length ? 'colspan="'+grrows.children.length+'"' : '';
-	                var title = grrows.sip_ref_rows_show_title ? grrows.sip_ref_rows_title : '';
+	                var title = grrows.sip_ref_rows_show_title ? grrows.sip_ref_rows_title : '';	
+	                var value = grrows.atc_value ? grrows.atc_value : '';
 
 	                input+='<td '+colspace+'>'+(r+1)+'.'+title+'</td>';
 	                
@@ -145,7 +146,7 @@
 
 	                  for(var codes=0;codes < grrows.codes.length;codes++){
 	                  	if(grrows.codes[codes].column){
-		                    input+='<td style="min-width:100px;"><input type="'+grrows.codes[codes].column.sip_ref_columns_val_type+'" class="form-control" name="'+grrows.codes[codes].sip_trx_row_values_code+'" placeholder="Input '+grrows.codes[codes].column.sip_ref_columns_title+' Here" required></td>';	                  		
+		                    input+='<td style="min-width:100px;"><input type="'+grrows.codes[codes].column.sip_ref_columns_val_type+'" class="form-control" name="'+grrows.codes[codes].sip_trx_row_values_code+'" placeholder="Input '+grrows.codes[codes].column.sip_ref_columns_title+' Here" value="'+value+'" required></td>';	                  		
 	                  	}
 	                  } 
 
@@ -156,6 +157,7 @@
 	                  
 	                  var child = grrows.children[children];
 	                  var title = child.sip_ref_rows_show_title ? child.sip_ref_rows_title : '';
+	                  var value = child.atc_value ? child.atc_value : '';
 
 	                  input+='<tr>';
 	                  input+='<td>-'+title+'</td>';

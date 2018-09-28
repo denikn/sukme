@@ -85,7 +85,9 @@ class SendBulkData extends Command
 
         }
 
-        if(count($tmp_array) && is_object($site_config)){
+        if(count($tmp_array) && is_object($site_config) 
+                && $site_config->sip_trx_site_configs_trf_type == 'online' 
+                && $site_config->sip_trx_site_configs_trf_data_type == 'bulk'){
             
             $client = new \GuzzleHttp\Client();
             

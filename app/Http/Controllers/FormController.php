@@ -41,6 +41,7 @@ class FormController extends Controller
     {   
         
         $form = Sip_ref_form::find($id);
+        $activity = $form->activity;
 
         $subs = $form->subs;
         foreach($subs as $sub){
@@ -69,7 +70,7 @@ class FormController extends Controller
 
         }
 
-        return view('admin.value.view_form_value_index',compact('form','subs'));
+        return view('admin.value.view_form_value_index',compact('form','subs','activity'));
 
     }
 
@@ -670,6 +671,216 @@ class FormController extends Controller
             if(File::exists(public_path().'/assets/'.$user->user_id.'/report-'.$dateSet.'.zip')){
 
                 return response()->download(public_path().'/assets/'.$user->user_id.'/report-'.$dateSet.'.zip')->deleteFileAfterSend(true);
+
+            }
+
+        }
+
+    }
+
+    public function generate_pelaporan_excel_admin_proses($id,Request $request){
+
+        $activities = Sip_ref_activity::where('sip_ref_activities_status','active')->get();
+        $user = Auth::user();
+        $from = $request->input('from');
+        $to = $request->input('to');
+        $dateSet = trim($request->input('from')) !== '' && trim($request->input('to')) !== '' ? ' from '.$request->input('from').' to '.$request->input('to') : '';
+        $destinationPath = public_path().'/assets/'.$user->user_id.'/tmp';    
+        $activity = Sip_ref_activity::find($id);
+
+        $last = strtotime($from); 
+        $next = strtotime($to);
+
+        // clean directory
+        $file = new Filesystem;
+        $file->cleanDirectory($destinationPath);
+
+        if(trim($from) !== '' && trim($to) !== '' && is_object($activity)){
+
+                $tmpForms = [];                
+                foreach($activity->forms()->where('sip_ref_forms_status','active')->get() as $form){
+                    
+                    $subs = $form->subs;
+                    foreach($subs as $sub){
+                        
+                        // get columns
+                        $tmpColumns = $sub->columns;
+
+                        // get row
+                        $tmpRows = $sub->rows()->where('sip_ref_rows_type_row','row')->get();
+
+                        foreach($tmpColumns as $col){
+
+                            foreach($tmpRows as $row){
+
+                                $row['value'] = $form->values()->join('sip_trx_form_submissions','sip_trx_form_submissions.sip_trx_form_submission_id','=','sip_trx_form_values.sip_trx_form_values_submission_id')
+                                                ->join('sip_trx_row_values','sip_trx_row_values.sip_trx_row_values_code','=','sip_trx_form_values.sip_trx_form_values_code')
+                                                ->where('sip_trx_row_values.sip_trx_row_values_column_id',$col->sip_ref_columns_id)
+                                                ->where('sip_trx_row_values.sip_trx_row_values_column_id',$col->sip_ref_columns_id)
+                                                ->where('sip_trx_row_values.sip_trx_row_values_row_id',$row->sip_ref_rows_id)
+                                                ->where('sip_trx_form_values.created_at','>=',date('Y-m-d', $last))
+                                                ->where('sip_trx_form_values.created_at','<=',date('Y-m-d', $next))
+                                                ->sum('sip_trx_form_values_value_string');  
+
+                            }
+
+                        }
+
+                        unset($sub['rows']);
+                        $sub['rows'] = $tmpRows; 
+
+                    }
+
+                    $tmpForms[] = $form;
+                } 
+            
+                unset($activity['forms']);
+                $activity['forms'] = $tmpForms; 
+            
+
+                Excel::create('report_'.CustomHelper::pretty_url($activity->sip_ref_activities_name).'_'.date('Ymd_hms'), function($excel) use($activity,$dateSet) {
+
+                // Set the spreadsheet title, creator, and description
+                $excel->setTitle('report-'.CustomHelper::pretty_url($activity->sip_ref_activities_name).'-'.date('Ymd-h:m:s'));
+                $excel->setCreator('Admin')->setCompany('SIP');
+                $excel->setDescription('Report result for '.CustomHelper::pretty_url($activity->sip_ref_activities_name));
+
+                    foreach($activity['forms'] as $form){  
+
+                        $overallArray = [];                         
+                        foreach($form->subs as $sub){
+                            
+                            if($sub->sip_ref_sub_forms_report_show){
+                            
+                                // title
+                                $overallArray[] = ['Form '.$sub->sip_ref_sub_forms_title];
+                                $titles = ['Params'];
+
+                                foreach($sub->rows as $row){
+                                    
+                                    $titles[] = $row->sip_ref_rows_title;                                
+
+                                }    
+                                
+                                $overallArray[] = $titles;
+
+                                // data
+                                $datas = [];
+                                foreach($sub->columns as $col){
+                                    $tmp_row = [$col->sip_ref_columns_title];
+                                    
+                                    foreach($sub->rows as $row){
+                                        $tmp_row[] = $row['value'];
+                                    }
+
+                                    $overallArray[] = $tmp_row;
+                                }
+                                
+                                $overallArray[] = [];
+                                $overallArray[] = [];
+                            }
+
+                        }
+                        
+                        $excel->sheet(substr($sub->sip_ref_sub_forms_title,0,30), function($sheet) use ($overallArray,$form) {
+                            
+                            //$sheet->setBorder('A2:D'.count($overallArray), 'medium');
+
+                            // header
+    /*                        $sheet->row(2, function($row) {
+
+                                $row->setBackground('#fff');
+
+                            });*/
+
+                            $sheet->fromModel($overallArray, null, 'A1', false, false);
+
+                        });
+                    }     
+                                 
+                })->store('xls', $destinationPath);       
+                       
+
+            $zipper = new \Chumper\Zipper\Zipper;
+
+            $zipper->make(public_path().'/assets/'.$user->user_id.'/report-'.$dateSet.'.zip')->add(glob($destinationPath.'/*'))->close();
+
+            if(File::exists(public_path().'/assets/'.$user->user_id.'/report-'.$dateSet.'.zip')){
+
+                return response()->download(public_path().'/assets/'.$user->user_id.'/report-'.$dateSet.'.zip')->deleteFileAfterSend(true);
+
+            }
+
+        }
+
+    }
+
+    public function generate_pelaporan_json_admin_proses(Request $request){
+
+        $activities = Sip_ref_activity::where('sip_ref_activities_status','active')->get();
+        $user = Auth::user();
+        $from = $request->input('from');
+        $to = $request->input('to');
+        $dateSet = trim($request->input('from')) !== '' && trim($request->input('to')) !== '' ? ' from '.$request->input('from').' to '.$request->input('to') : '';
+        $destinationPath = 'assets/'.$user->user_id.'/tmp';    
+
+        $last = strtotime($from); 
+        $next = strtotime($to);
+
+        // clean directory
+        $file = new Filesystem;
+        $file->cleanDirectory(public_path().'/'.$destinationPath);
+
+        if(trim($from) !== '' && trim($to) !== ''){
+
+            $submissions = Sip_trx_form_submission::where('created_at','>=',date('Y-m-d', $last))
+                                                    ->where('created_at','<=',date('Y-m-d', $next))
+                                                    ->get();
+
+            $tmp_array = [];
+
+            foreach($submissions as $submission){
+
+                $tmp_value = [
+                        
+                        'submission_id' => $submission->sip_trx_form_submission_id, 
+                        'submission_form_id' => $submission->sip_trx_form_submission_form_id, 
+                        'submission_user_id' => $submission->sip_trx_form_submission_user_id
+
+                        ];
+
+                foreach($submission->values as $value){
+                    
+                    $arr = array( $value->sip_trx_form_values_code => $value->sip_trx_form_values_value_string );
+                    
+                    $tmp_value = array_merge($tmp_value,$arr);
+
+                }
+
+                $tmp_array[] = $tmp_value;
+
+            }
+
+            $tmp_array = [ 'data' => $tmp_array ];
+
+            $file_name = 'generated_json_'.date('Ymd_hms').'.txt';
+
+            Storage::put($file_name, json_encode($tmp_array));
+
+            // user log
+            $inputLog = array(
+
+                'sip_trx_user_logs_user_id' => $user->user_id,
+                'sip_trx_user_logs_type' => 'generate-submission-offline',
+                'sip_trx_user_logs_desc' => 'Generating submission data from '.$from.' to '.$to
+
+                );
+            
+            Sip_trx_user_log::create($inputLog);
+
+            if(File::exists(storage_path().'/app/'.$file_name)){
+
+                return response()->download(storage_path().'/app/'.$file_name)->deleteFileAfterSend(true);
 
             }
 

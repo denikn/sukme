@@ -10,6 +10,9 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Auth::routes();
+
 Route::get('/', 'HomeController@index')->name('home');
 Route::get('/home', 'HomeController@index')->name('index');
 
@@ -41,8 +44,6 @@ Route::prefix('logout')->namespace('Auth')->group(function () {
 	Route::get('/member', 'LoginController@logoutMember')->name('logout_member');
 
 });
-
-//Auth::routes();
 
 Route::prefix('member')->middleware('auth:member')->group(function () {
 
@@ -99,7 +100,8 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
 	Route::prefix('config')->group(function () {
 		
 		Route::get('/', 'AdminController@index_config')->name('index_config_admin');
-		Route::post('/', 'AdminController@update_config_proses')->name('update_config_admin');
+		Route::post('/meta', 'AdminController@update_meta_proses')->name('update_meta_admin');
+		Route::post('/setting', 'AdminController@update_setting_proses')->name('update_setting_admin');
 		Route::get('/puskesmas', 'AdminController@index_puskesmas')->name('index_puskesmas_admin');
 		Route::post('/puskesmas', 'AdminController@update_puskesmas_proses')->name('update_puskesmas_admin');
 
@@ -135,6 +137,20 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
 			Route::post('/', 'FormController@add_admin_activity_proses')->name('add_activity_admin');
 			Route::get('/delete/{id}', 'FormController@delete_admin_activity_proses')->name('delete_activity_admin');
 			Route::get('/update/{id}', 'FormController@update_admin_activity_proses')->name('update_activity_admin');
+
+		});
+		
+		Route::prefix('generate')->group(function () {
+			
+			Route::get('/activity', 'AdminController@index_generate_activity')->name('generate_activity_member');
+			Route::get('/send', 'MemberController@index_activity_member')->name('generate_send_member');
+
+		});
+
+		Route::prefix('download')->group(function () {
+			
+			Route::get('/excel/{id}', 'FormController@generate_pelaporan_excel_admin_proses')->name('download_excel_activity_admin');
+			Route::get('/json', 'FormController@generate_pelaporan_json_admin_proses')->name('download_json_activity_admin');
 
 		});
 

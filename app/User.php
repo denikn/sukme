@@ -61,9 +61,14 @@ class User extends Authenticatable
 
     // aksesor
     public function getUserImgProfileAttribute($value)
-    {
-        $path = asset('/assets/'.$this->user_id.'/profile/'.$value);
+    {   
+
+        $path = 'https://placeholdit.co//i/50x50?text='.strtoupper(substr($this->user_name, 0, 2));
+
+        if(trim($value) !== '') $path = asset('/assets/'.$this->user_id.'/profile/'.$value);
+
         return $path;
+
     }
 
     /**

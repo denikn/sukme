@@ -27,6 +27,23 @@ class AppServiceProvider extends ServiceProvider
         View::share('shared_activities', $activities);
 
         $site_config = Sip_trx_site_config::first();
+        
+        if(!is_object($site_config)){
+
+            $input = array(
+                
+                'sip_trx_site_configs_title' => 'SIP',
+                'sip_trx_site_configs_icon' => '#',
+                'sip_trx_site_configs_logo' => '#',
+                'sip_trx_site_configs_description' => 'No Description',
+                'sip_trx_site_configs_address' => 'No Address',
+                'sip_trx_site_configs_key_sisdinkes'  => 'No Key',
+
+                );
+
+            $site_config = Sip_trx_site_config::create($input);
+
+        }
 
         if(is_object($site_config)){
             View::share('site_config', $site_config);  

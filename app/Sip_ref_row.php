@@ -2,14 +2,18 @@
 
 namespace App;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
+
 use App\Sip_trx_form_value;
 use App\Sip_trx_form_submission;
 
 class Sip_ref_row extends Model
 {
-	protected $primaryKey = 'sip_ref_rows_id';
-	
+	protected $primaryKey = 'sip_ref_rows_id';    
+    protected $appends = array('atc_value');
+
     protected $fillable = [
         
         'sip_ref_rows_title',
@@ -41,6 +45,21 @@ class Sip_ref_row extends Model
                             ->where('sip_trx_row_values.sip_trx_row_values_column_id',$col->sip_ref_columns_id)
                             ->where('sip_trx_row_values.sip_trx_row_values_row_id',$row->sip_ref_rows_id);
 
+    }
+
+    // aksesor
+    public function getAtcValueAttribute($value)
+    {
+        if($this->sip_ref_rows_atc_fill){
+
+            $col = explode('.', $this->sip_ref_rows_atc_col);
+
+            $data = DB::table($col[0])->select($col[1])->first();
+
+            return is_object($data) ? $data->{$col[1]} : '';   
+        }
+
+        return '';
     }
 
     public function codes()
