@@ -40,6 +40,7 @@ Route::prefix('login')->namespace('Auth')->group(function () {
 //logout routes
 Route::prefix('logout')->namespace('Auth')->group(function () {
 
+	Route::get('/', 'LoginController@logoutMember')->name('logout_member');
 	Route::get('/admin', 'LoginController@logoutAdmin')->name('logout_admin');
 	Route::get('/member', 'LoginController@logoutMember')->name('logout_member');
 

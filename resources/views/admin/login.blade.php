@@ -18,6 +18,11 @@
                     {{ session('message') }}
                 </div>
             @endif
+            @if (session('status'))
+                <div class="alert alert-success">
+                    {{ session('status') }}
+                </div>
+            @endif
             <form method="POST" action="{{ route('login_admin') }}" class="needs-validation" novalidate="">
                 {{ csrf_field() }}
               <div class="form-group">
@@ -48,6 +53,10 @@
                 <button type="submit" class="btn btn-primary btn-block" tabindex="4">
                   Login
                 </button>
+                <hr>
+                <a class="btn btn-link" href="{{ route('password.request') }}">
+                    Forgot Your Password?
+                </a>
               </div>
             </form>
           </div>
